@@ -14,11 +14,9 @@ public class ArrayStorage {
     }
 
     void save(Resume r) {
-        if (size == storage.length) {
-            storage = Arrays.copyOf(storage, storage.length + 1);
+        if (size < storage.length ) {
+            storage[size++] = r;
         }
-
-        storage[size++] = r;
     }
 
     Resume get(String uuid) {
@@ -34,10 +32,15 @@ public class ArrayStorage {
     void delete(String uuid) {
         int index = getIndex(uuid);
 
-        if (index != -1) {
-            System.arraycopy(storage, index + 1, storage, index, size - index - 1);
-            size--;
+        if (index == -1) {
+            return;
         }
+
+        if (index + 1 != size) {
+            System.arraycopy(storage, index + 1, storage, index, size - index - 1);
+        }
+
+        storage[--size] = null;
     }
 
     /**
