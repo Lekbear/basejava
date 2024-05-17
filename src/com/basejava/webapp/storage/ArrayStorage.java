@@ -5,8 +5,8 @@ import com.basejava.webapp.model.Resume;
 import java.util.Arrays;
 
 public class ArrayStorage {
-    private Resume[] storage = new Resume[10000];
-
+    private final int STORAGE_LIMIT = 10000;
+    private final Resume[] storage = new Resume[STORAGE_LIMIT];
     private int size = 0;
 
     public void clear() {
@@ -17,12 +17,12 @@ public class ArrayStorage {
     public void save(Resume resume) {
         int index = getIndex(resume.getUuid());
 
-        if (index != -1) {
-            System.out.println("Резюме " + resume.getUuid() + " не сохранено, в storage уже есть резюме с таким uuid");
-        } else if (size < storage.length ) {
-            storage[size++] = resume;
-        } else {
+        if (size >= storage.length) {
             System.out.println("Резюме " + resume.getUuid() + " не сохранено, storage перполнено");
+        } else if (index != -1) {
+            System.out.println("Резюме " + resume.getUuid() + " не сохранено, в storage уже есть резюме с таким uuid");
+        } else {
+            storage[size++] = resume;
         }
     }
 
