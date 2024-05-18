@@ -2,72 +2,9 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.model.Resume;
 
-import java.util.Arrays;
-
-public class ArrayStorage {
-    private final int STORAGE_LIMIT = 10000;
-    private final Resume[] storage = new Resume[STORAGE_LIMIT];
-    private int size = 0;
-
-    public void clear() {
-        Arrays.fill(storage, 0, size, null);
-        size = 0;
-    }
-
-    public void save(Resume resume) {
-        int index = getIndex(resume.getUuid());
-
-        if (size >= storage.length) {
-            System.out.println("Резюме " + resume.getUuid() + " не сохранено, storage перполнено");
-        } else if (index != -1) {
-            System.out.println("Резюме " + resume.getUuid() + " не сохранено, в storage уже есть резюме с таким uuid");
-        } else {
-            storage[size++] = resume;
-        }
-    }
-
-    public void update(Resume resume) {
-        int index = getIndex(resume.getUuid());
-
-        if (index == -1) {
-            System.out.println("Резюме " + resume.getUuid() + " не обновлено, в storage нет резюме с таким uuid");
-        } else {
-            storage[index] = resume;
-        }
-    }
-
-    public Resume get(String uuid) {
-        int index = getIndex(uuid);
-
-        if (index == -1) {
-            System.out.println("Резюме " + uuid + " не найдено, в storage нет резюме с таким uuid");
-            return null;
-        } else {
-            return storage[index];
-        }
-    }
-
-    public void delete(String uuid) {
-        int index = getIndex(uuid);
-
-        if (index == -1) {
-            System.out.println("Резюме " + uuid + " не удалено, в storage нет резюме с таким uuid");
-            return;
-        }
-
-        storage[index] = storage[--size];
-        storage[size] = null;
-    }
-
-    public Resume[] getAll() {
-        return Arrays.copyOf(storage, size);
-    }
-
-    public int size() {
-        return size;
-    }
-
-    private int getIndex(String uuid) {
+public class ArrayStorage extends AbstractArrayStorage{
+    @Override
+    protected int getIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (storage[i].getUuid().equals(uuid)) {
                 return i;
@@ -75,5 +12,10 @@ public class ArrayStorage {
         }
 
         return -1;
+    }
+
+    @Override
+    protected void insert(Resume resume, int index) {
+        storage[size] = resume;
     }
 }
