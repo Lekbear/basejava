@@ -10,57 +10,58 @@ public abstract class AbstractStorage implements Storage {
     }
 
     public final void save(Resume resume) {
-        int index = getIndex(resume.getUuid());
+        Object searchKey = getSearchKey(resume.getUuid());
 
-        if (index >= 0) {
+        if (isExisting(searchKey)) {
             throw new ExistStorageException(resume.getUuid());
         }
 
-        saveResume(resume, index);
+        saveResume(resume, searchKey);
     }
 
     public final void update(Resume resume) {
-        setResume(resume, getIndexCheckNotExist(resume.getUuid()));
+        setResume(resume, getNotExistingSearchKey(resume.getUuid()));
     }
 
     public final Resume get(String uuid) {
-        return getResume(getIndexCheckNotExist(uuid));
+        return getResume(getNotExistingSearchKey(uuid));
     }
 
     public final void delete(String uuid) {
-        deleteResume(getIndexCheckNotExist(uuid));
+        deleteResume(getNotExistingSearchKey(uuid));
     }
 
     public Resume[] getAll() {
         return getArray();
-
     }
 
     public int size() {
         return getSize();
     }
 
-    private int getIndexCheckNotExist(String uuid) {
-        int index = getIndex(uuid);
+    private Object getNotExistingSearchKey(String uuid) {
+        Object searchKey = getSearchKey(uuid);
 
-        if (index < 0) {
+        if (!isExisting(searchKey)) {
             throw new NotExistStorageException(uuid);
         }
 
-        return index;
+        return searchKey;
     }
 
-    protected abstract int getIndex(String uuid);
+    protected abstract boolean isExisting(Object searchKey);
+
+    protected abstract Object getSearchKey(String uuid);
 
     protected abstract void clearAll();
 
-    protected abstract void saveResume(Resume resume, int index);
+    protected abstract void saveResume(Resume resume, Object searchKey);
 
-    protected abstract void setResume(Resume resume, int index);
+    protected abstract void setResume(Resume resume, Object searchKey);
 
-    protected abstract Resume getResume(int index);
+    protected abstract Resume getResume(Object searchKey);
 
-    protected abstract void deleteResume(int index);
+    protected abstract void deleteResume(Object searchKey);
 
     protected abstract Resume[] getArray();
 

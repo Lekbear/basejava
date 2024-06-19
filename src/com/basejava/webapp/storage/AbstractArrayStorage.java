@@ -12,34 +12,39 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected int size = 0;
 
     @Override
+    protected boolean isExisting(Object searchKey) {
+        return (int) searchKey >= 0;
+    }
+
+    @Override
     protected void clearAll() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
     }
 
     @Override
-    protected void saveResume(Resume resume, int index) {
+    protected void saveResume(Resume resume, Object searchKey) {
         if (size >= STORAGE_LIMIT) {
             throw new StorageException("Storage overflow", resume.getUuid());
         } else {
-            insert(resume, index);
+            insert(resume, (int) searchKey);
             size++;
         }
     }
 
     @Override
-    protected void setResume(Resume resume, int index) {
-        storage[index] = resume;
+    protected void setResume(Resume resume, Object searchKey) {
+        storage[(int) searchKey] = resume;
     }
 
     @Override
-    protected Resume getResume(int index) {
-        return storage[index];
+    protected Resume getResume(Object searchKey) {
+        return storage[(int) searchKey];
     }
 
     @Override
-    protected void deleteResume(int index) {
-        remove(index);
+    protected void deleteResume(Object searchKey) {
+        remove((int) searchKey);
         storage[--size] = null;
     }
 
