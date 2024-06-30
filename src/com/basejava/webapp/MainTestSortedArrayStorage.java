@@ -10,12 +10,12 @@ public class MainTestSortedArrayStorage {
     static final String UUID1 = "uuid1";
     static final String UUID2 = "uuid2";
     static final String UUID3 = "uuid3";
-    
+
     public static void main(String[] args) {
-        Resume r1 = new Resume(UUID1);
-        Resume r2 = new Resume(UUID2);
-        Resume r3 = new Resume(UUID3);
-        
+        Resume r1 = new Resume(UUID1, Resume.getRandomFullName());
+        Resume r2 = new Resume(UUID2, Resume.getRandomFullName());
+        Resume r3 = new Resume(UUID3, Resume.getRandomFullName());
+
         SORTED_ARRAY_STORAGE.save(r2);
         SORTED_ARRAY_STORAGE.save(r1);
         SORTED_ARRAY_STORAGE.save(r3);
@@ -30,7 +30,7 @@ public class MainTestSortedArrayStorage {
         printAll();
 
         System.out.println("\nSave: " + UUID0);
-        Resume r0 = new Resume(UUID0);
+        Resume r0 = new Resume(UUID0, Resume.getRandomFullName());
         SORTED_ARRAY_STORAGE.save(r0);
         printAll();
 
@@ -45,7 +45,7 @@ public class MainTestSortedArrayStorage {
 
     static void printAll() {
         System.out.println("\nGet All");
-        for (Resume r : SORTED_ARRAY_STORAGE.getAll()) {
+        for (Resume r : SORTED_ARRAY_STORAGE.getAllSorted()) {
             System.out.println(r);
         }
     }

@@ -7,7 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 
@@ -19,12 +19,18 @@ public abstract class AbstractStorageTest {
     protected static final String UUID_3 = "uuid3";
     protected static final String UUID_4 = "uuid4";
     protected static final String NOT_EXIST_UUID = "dummy";
+    protected static final String NOT_EXIST_FULL_NAME = "full_name_dummy";
 
-    protected static final Resume RESUME_1 = new Resume(UUID_1);
-    protected static final Resume RESUME_2 = new Resume(UUID_2);
-    protected static final Resume RESUME_3 = new Resume(UUID_3);
-    protected static final Resume RESUME_4 = new Resume(UUID_4);
-    protected static final Resume RESUME_NOT_EXIST = new Resume(NOT_EXIST_UUID);
+    protected static final String FULL_NAME_1 = "full_name_1";
+    protected static final String FULL_NAME_2 = "full_name_2";
+    protected static final String FULL_NAME_3 = "full_name_3";
+    protected static final String FULL_NAME_4 = "full_name_4";
+
+    protected static final Resume RESUME_1 = new Resume(UUID_1, FULL_NAME_1);
+    protected static final Resume RESUME_2 = new Resume(UUID_2, FULL_NAME_2);
+    protected static final Resume RESUME_3 = new Resume(UUID_3, FULL_NAME_3);
+    protected static final Resume RESUME_4 = new Resume(UUID_4, FULL_NAME_4);
+    protected static final Resume RESUME_NOT_EXIST = new Resume(NOT_EXIST_UUID, NOT_EXIST_FULL_NAME);
 
     protected static final Resume[] EMPTY_RESUMES = new Resume[]{};
     protected static final Resume[] DEFAULT_RESUMES = {RESUME_1, RESUME_2, RESUME_3};
@@ -45,7 +51,7 @@ public abstract class AbstractStorageTest {
     public void clear() {
         storage.clear();
         assertSize(0);
-        assertGetAll(EMPTY_RESUMES);
+        assertGetAllSorted(EMPTY_RESUMES);
     }
 
     @Test
@@ -94,8 +100,8 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    public void getAll() {
-        assertGetAll(DEFAULT_RESUMES);
+    public void getAllSorted() {
+        assertGetAllSorted(DEFAULT_RESUMES);
     }
 
     @Test
@@ -111,9 +117,8 @@ public abstract class AbstractStorageTest {
         Assert.assertSame(resume, storage.get(resume.getUuid()));
     }
 
-    protected void assertGetAll(Resume[] resumes) {
-        Resume[] array = storage.getAll();
-        Arrays.sort(array);
-        assertArrayEquals(resumes, array);
+    protected void assertGetAllSorted(Resume[] resumes) {
+        List<Resume> list = storage.getAllSorted();
+        assertArrayEquals(resumes, list.toArray());
     }
 }
