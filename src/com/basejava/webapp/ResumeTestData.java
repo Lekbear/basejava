@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ResumeTestData {
-    private static final Resume RESUME = new Resume("Григорий Кислин");
     private static final Map<SectionType, String> TEXTS = new HashMap<>();
     private static final Map<SectionType, List<String>> LISTTEXTS = new HashMap<>();
     private static final Map<SectionType, List<LocalDate>> STARTDATES = new HashMap<>();
@@ -22,9 +21,15 @@ public class ResumeTestData {
     private static final Map<SectionType, List<Company>> COMPANIES = new HashMap<>();
 
     public static void main(String[] args) {
-        RESUME.putContact(ContactType.TELEPHONE, "+79218550482");
-        RESUME.putContact(ContactType.SKYPE, "skype:grigory.kislin");
-        RESUME.putContact(ContactType.EMAIL, "gkislin@yandex.ru");
+        Resume resume = getNewResume("uuid1", "Григорий Кислин");
+        System.out.println(resume);
+    }
+
+    public static Resume getNewResume(String uuid, String fullName) {
+        Resume resume = new Resume(uuid, fullName);
+        resume.putContact(ContactType.TELEPHONE, "+79218550482");
+        resume.putContact(ContactType.SKYPE, "skype:grigory.kislin");
+        resume.putContact(ContactType.EMAIL, "gkislin@yandex.ru");
 
         for (SectionType sectionType : SectionType.values()) {
             Section section = switch (sectionType) {
@@ -32,14 +37,16 @@ public class ResumeTestData {
                 case ACHIEVEMENT, QUALIFICATIONS -> retrieveListTextSection(sectionType);
                 case EXPERIENCE, EDUCATION -> retrieveCompanySection(sectionType);
             };
-            RESUME.putSection(sectionType, section);
+            resume.putSection(sectionType, section);
         }
 
-        System.out.println(RESUME);
+        return resume;
     }
 
     private static Section retrieveTextSection(SectionType sectionType) {
-        fillText(sectionType);
+        if (TEXTS.get(sectionType) == null) {
+            fillText(sectionType);
+        }
         return new TextSection(TEXTS.get(sectionType));
     }
 
@@ -54,7 +61,9 @@ public class ResumeTestData {
     }
 
     private static Section retrieveListTextSection(SectionType sectionType) {
-        fillListText(sectionType);
+        if (LISTTEXTS.get(sectionType) == null) {
+            fillListText(sectionType);
+        }
         return new ListTextSection(LISTTEXTS.get(sectionType));
     }
 
@@ -82,14 +91,38 @@ public class ResumeTestData {
     }
 
     private static Section retrieveCompanySection(SectionType sectionType) {
-        fillStartDates(sectionType);
-        fillEndDates(sectionType);
-        fillTitles(sectionType);
-        fillDescriptions(sectionType);
-        fillPeriods(sectionType);
-        fillNames(sectionType);
-        fillWebsites(sectionType);
-        fillCompanies(sectionType);
+        if (STARTDATES.get(sectionType) == null) {
+            fillStartDates(sectionType);
+        }
+
+        if (ENDDATES.get(sectionType) == null) {
+            fillEndDates(sectionType);
+        }
+
+        if (TITLES.get(sectionType) == null) {
+            fillTitles(sectionType);
+        }
+
+        if (DESCRIPTIONS.get(sectionType) == null) {
+            fillDescriptions(sectionType);
+        }
+
+        if (PERIODS.get(sectionType) == null) {
+            fillPeriods(sectionType);
+        }
+
+        if (NAMES.get(sectionType) == null) {
+            fillNames(sectionType);
+        }
+
+        if (WEBSITES.get(sectionType) == null) {
+            fillWebsites(sectionType);
+        }
+
+        if (COMPANIES.get(sectionType) == null) {
+            fillCompanies(sectionType);
+        }
+
         return new CompanySection(COMPANIES.get(sectionType));
     }
 

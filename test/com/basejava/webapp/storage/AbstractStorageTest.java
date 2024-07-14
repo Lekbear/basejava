@@ -1,5 +1,6 @@
 package com.basejava.webapp.storage;
 
+import com.basejava.webapp.ResumeTestData;
 import com.basejava.webapp.exception.ExistStorageException;
 import com.basejava.webapp.exception.NotExistStorageException;
 import com.basejava.webapp.model.Resume;
@@ -26,11 +27,11 @@ public abstract class AbstractStorageTest {
     protected static final String FULL_NAME_3 = "full_name_3";
     protected static final String FULL_NAME_4 = "full_name_4";
 
-    protected static final Resume RESUME_1 = new Resume(UUID_1, FULL_NAME_1);
-    protected static final Resume RESUME_2 = new Resume(UUID_2, FULL_NAME_2);
-    protected static final Resume RESUME_3 = new Resume(UUID_3, FULL_NAME_3);
-    protected static final Resume RESUME_4 = new Resume(UUID_4, FULL_NAME_4);
-    protected static final Resume RESUME_NOT_EXIST = new Resume(NOT_EXIST_UUID, NOT_EXIST_FULL_NAME);
+    protected static final Resume RESUME_1 = ResumeTestData.getNewResume(UUID_1, FULL_NAME_1);
+    protected static final Resume RESUME_2 = ResumeTestData.getNewResume(UUID_2, FULL_NAME_2);
+    protected static final Resume RESUME_3 = ResumeTestData.getNewResume(UUID_3, FULL_NAME_3);
+    protected static final Resume RESUME_4 = ResumeTestData.getNewResume(UUID_4, FULL_NAME_4);
+    protected static final Resume RESUME_NOT_EXIST = ResumeTestData.getNewResume(NOT_EXIST_UUID, NOT_EXIST_FULL_NAME);
 
     protected static final Resume[] EMPTY_RESUMES = new Resume[]{};
     protected static final Resume[] DEFAULT_RESUMES = {RESUME_1, RESUME_2, RESUME_3};
