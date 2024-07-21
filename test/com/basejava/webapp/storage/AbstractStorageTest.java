@@ -8,11 +8,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 
 public abstract class AbstractStorageTest {
+    protected static final File STORAGE_DIR = new File(System.getProperty("user.dir") + "//storage");
     protected final Storage storage;
 
     protected static final String UUID_1 = "uuid1";
@@ -115,7 +117,7 @@ public abstract class AbstractStorageTest {
     }
 
     protected void assertGet(Resume resume) {
-        Assert.assertSame(resume, storage.get(resume.getUuid()));
+        Assert.assertEquals(resume, storage.get(resume.getUuid()));
     }
 
     protected void assertGetAllSorted(Resume[] resumes) {

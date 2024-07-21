@@ -1,9 +1,10 @@
 package com.basejava.webapp.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public final class Period {
+public final class Period implements Serializable {
     private LocalDate startDate;
     private LocalDate endDate;
     private String title;
