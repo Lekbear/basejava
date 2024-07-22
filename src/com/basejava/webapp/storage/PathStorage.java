@@ -2,6 +2,7 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.exception.StorageException;
 import com.basejava.webapp.model.Resume;
+import com.basejava.webapp.storage.serialization.StreamSerializable;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -42,7 +43,7 @@ public class PathStorage extends AbstractStorage<Path> {
         try (Stream<Path> s = Files.list(directory)) {
             s.forEach(this::deleteResume);
         } catch (IOException e) {
-            throw new StorageException("Path delete error", null);
+            throw new StorageException("IO error", null);
         }
     }
 
@@ -84,15 +85,11 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected List<Resume> getList() {
-        List<Resume> resumes;
-
         try (Stream<Path> s = Files.list(directory)) {
-            resumes = s.map(this::getResume).collect(Collectors.toList());
+            return s.map(this::getResume).collect(Collectors.toList());
         } catch (IOException e) {
-            throw new StorageException("Path delete error", null);
+            throw new StorageException("IO error", null);
         }
-
-        return resumes;
     }
 
     @Override
@@ -100,7 +97,7 @@ public class PathStorage extends AbstractStorage<Path> {
         try (Stream<Path> s = Files.list(directory)) {
             return (int) s.count();
         } catch (IOException e) {
-            throw new StorageException("Path delete error", null);
+            throw new StorageException("IO error", null);
         }
     }
 }
