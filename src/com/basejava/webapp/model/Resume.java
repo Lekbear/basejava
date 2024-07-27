@@ -1,5 +1,8 @@
 package com.basejava.webapp.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.EnumMap;
@@ -7,6 +10,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Resume implements Comparable<Resume>, Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -104,5 +109,13 @@ public class Resume implements Comparable<Resume>, Serializable {
 
     public Section getSection(SectionType sectionType) {
         return sections.get(sectionType);
+    }
+
+    public Map<ContactType, String> getContacts() {
+        return contacts;
+    }
+
+    public Map<SectionType, Section> getSections() {
+        return sections;
     }
 }

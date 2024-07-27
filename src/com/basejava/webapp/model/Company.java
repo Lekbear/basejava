@@ -10,12 +10,12 @@ public final class Company implements Serializable {
     private static final long serialVersionUID = 1L;
     private String name;
     private String website;
-    private final List<Period> periods;
+    private List<Period> periods;
+
+    public Company() {
+    }
 
     public Company(String name, String website, List<Period> periods) {
-        Objects.requireNonNull(name, "name must not be null");
-        Objects.requireNonNull(website, "website must not be null");
-        checkPeriodsNoNull(periods);
         this.name = name;
         this.website = website;
         this.periods = periods;
@@ -26,7 +26,6 @@ public final class Company implements Serializable {
     }
 
     public void setName(String name) {
-        Objects.requireNonNull(name, "name must not be null");
         this.name = name;
     }
 
@@ -35,7 +34,6 @@ public final class Company implements Serializable {
     }
 
     public void setWebsite(String website) {
-        Objects.requireNonNull(website, "website must not be null");
         this.website = website;
     }
 
@@ -44,9 +42,12 @@ public final class Company implements Serializable {
     }
 
     public void setPeriods(List<Period> periods) {
-        checkPeriodsNoNull(periods);
-        this.periods.clear();
-        this.periods.addAll(periods);
+        if (this.periods == null) {
+            this.periods = periods;
+        } else {
+            this.periods.clear();
+            this.periods.addAll(periods);
+        }
     }
 
     @Override
@@ -55,14 +56,15 @@ public final class Company implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
 
         Company company = (Company) o;
-        return name.equals(company.name) && website.equals(company.website) && periods.equals(company.periods);
+        return Objects.equals(name, company.name) && Objects.equals(website, company.website)
+                && Objects.equals(periods, company.periods);
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + website.hashCode();
-        result = 31 * result + periods.hashCode();
+        int result = Objects.hashCode(name);
+        result = 31 * result + Objects.hashCode(website);
+        result = 31 * result + Objects.hashCode(periods);
         return result;
     }
 
@@ -77,12 +79,5 @@ public final class Company implements Serializable {
             ans.append(period);
         }
         return ans.toString();
-    }
-
-    private void checkPeriodsNoNull(List<Period> periods) {
-        Objects.requireNonNull(periods, "periods must not be null");
-        for (Period period : periods) {
-            Objects.requireNonNull(period, "period must not be null");
-        }
     }
 }

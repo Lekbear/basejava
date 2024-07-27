@@ -1,17 +1,22 @@
 package com.basejava.webapp.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ListTextSection extends Section {
     @Serial
     private static final long serialVersionUID = 1L;
     private final List<String> texts = new ArrayList<>();
 
+    public ListTextSection() {
+    }
+
     public ListTextSection(List<String> texts) {
-        checkTextsNonNull(texts);
         this.texts.addAll(texts);
     }
 
@@ -20,13 +25,11 @@ public class ListTextSection extends Section {
     }
 
     public void setTexts(List<String> texts) {
-        checkTextsNonNull(texts);
         this.texts.clear();
         this.texts.addAll(texts);
     }
 
     public void add(String text) {
-        Objects.requireNonNull(text, "text must not be null");
         texts.add(text);
     }
 
@@ -41,12 +44,12 @@ public class ListTextSection extends Section {
         if (o == null || getClass() != o.getClass()) return false;
 
         ListTextSection that = (ListTextSection) o;
-        return texts.equals(that.texts);
+        return Objects.equals(texts, that.texts);
     }
 
     @Override
     public int hashCode() {
-        return texts.hashCode();
+        return Objects.hashCode(texts);
     }
 
     @Override
@@ -57,12 +60,5 @@ public class ListTextSection extends Section {
             ans.append(text);
         }
         return ans.toString();
-    }
-
-    private void checkTextsNonNull(List<String> texts) {
-        Objects.requireNonNull(texts, "texts must not be null");
-        for (String text : texts) {
-            Objects.requireNonNull(text, "text must not be null");
-        }
     }
 }

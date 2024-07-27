@@ -1,20 +1,27 @@
 package com.basejava.webapp.model;
 
+import com.basejava.webapp.util.XmlLocalDateAdapter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 public final class Period implements Serializable {
+    @XmlJavaTypeAdapter(XmlLocalDateAdapter.class)
     private LocalDate startDate;
+    @XmlJavaTypeAdapter(XmlLocalDateAdapter.class)
     private LocalDate endDate;
     private String title;
     private String description;
 
+    public Period() {
+    }
+
     public Period(LocalDate startDate, LocalDate endDate, String title, String description) {
-        Objects.requireNonNull(startDate, "startDate must not be null");
-        Objects.requireNonNull(endDate, "endDate must not be null");
-        Objects.requireNonNull(title, "title must not be null");
-        Objects.requireNonNull(description, "description must not be null");
         this.startDate = startDate;
         this.endDate = endDate;
         this.title = title;
@@ -26,7 +33,6 @@ public final class Period implements Serializable {
     }
 
     public void setStartDate(LocalDate startDate) {
-        Objects.requireNonNull(startDate, "startDate must not be null");
         this.startDate = startDate;
     }
 
@@ -35,7 +41,6 @@ public final class Period implements Serializable {
     }
 
     public void setEndDate(LocalDate endDate) {
-        Objects.requireNonNull(endDate, "endDate must not be null");
         this.endDate = endDate;
     }
 
@@ -44,7 +49,6 @@ public final class Period implements Serializable {
     }
 
     public void setTitle(String title) {
-        Objects.requireNonNull(title, "title must not be null");
         this.title = title;
     }
 
@@ -52,8 +56,7 @@ public final class Period implements Serializable {
         return description;
     }
 
-    public void getDescription(String description) {
-        Objects.requireNonNull(description, "description must not be null");
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -63,15 +66,16 @@ public final class Period implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
 
         Period period = (Period) o;
-        return startDate.equals(period.startDate) && endDate.equals(period.endDate) && title.equals(period.title) && description.equals(period.description);
+        return Objects.equals(startDate, period.startDate) && Objects.equals(endDate, period.endDate)
+                && Objects.equals(title, period.title) && Objects.equals(description, period.description);
     }
 
     @Override
     public int hashCode() {
-        int result = startDate.hashCode();
-        result = 31 * result + endDate.hashCode();
-        result = 31 * result + title.hashCode();
-        result = 31 * result + description.hashCode();
+        int result = Objects.hashCode(startDate);
+        result = 31 * result + Objects.hashCode(endDate);
+        result = 31 * result + Objects.hashCode(title);
+        result = 31 * result + Objects.hashCode(description);
         return result;
     }
 
