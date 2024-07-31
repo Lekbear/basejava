@@ -5,8 +5,8 @@ import com.basejava.webapp.model.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public class DataStreamSerializer implements StreamSerializer {
     @Override
@@ -15,50 +15,34 @@ public class DataStreamSerializer implements StreamSerializer {
             dos.writeUTF(resume.getUuid());
             dos.writeUTF(resume.getFullName());
 
-            Map<ContactType, String> contacts = resume.getContacts();
-            dos.writeInt(contacts.size());
-
-            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+            writeWithException(resume.getContacts().entrySet(), dos, entry -> {
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
-            }
+            });
 
-            Map<SectionType, Section> sections = resume.getSections();
-            dos.writeInt(sections.size());
-
-            for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
+            writeWithException(resume.getSections().entrySet(), dos, entry -> {
                 dos.writeUTF(entry.getKey().name());
-
                 switch (entry.getKey()) {
-                    case PERSONAL, OBJECTIVE -> dos.writeUTF(((TextSection) entry.getValue()).getText());
+                    case PERSONAL, OBJECTIVE -> {
+                        dos.writeUTF(((TextSection) entry.getValue()).getText());
+                    }
                     case ACHIEVEMENT, QUALIFICATIONS -> {
-                        List<String> texts = ((ListTextSection) entry.getValue()).getTexts();
-                        dos.writeInt(texts.size());
-
-                        for (String text : texts) {
-                            dos.writeUTF(text);
-                        }
+                        writeWithException(((ListTextSection) entry.getValue()).getTexts(), dos, dos::writeUTF);
                     }
                     case EXPERIENCE, EDUCATION -> {
-                        List<Company> companies = ((CompanySection) entry.getValue()).getCompanies();
-                        dos.writeInt(companies.size());
-
-                        for (Company company : companies) {
+                        writeWithException(((CompanySection) entry.getValue()).getCompanies(), dos, company -> {
                             dos.writeUTF(company.getName());
                             dos.writeUTF(company.getWebsite());
-                            List<Period> periods = company.getPeriods();
-                            dos.writeInt(periods.size());
-
-                            for (Period period : periods) {
+                            writeWithException(company.getPeriods(), dos, period -> {
                                 dos.writeUTF(period.getStartDate().toString());
                                 dos.writeUTF(period.getEndDate().toString());
                                 dos.writeUTF(period.getTitle());
                                 dos.writeUTF(period.getDescription());
-                            }
-                        }
+                            });
+                        });
                     }
                 }
-            }
+            });
         }
     }
 
@@ -111,5 +95,18 @@ public class DataStreamSerializer implements StreamSerializer {
             companies.add(new Company(name, webSite, periods));
         }
         return new CompanySection(companies);
+    }
+
+    @FunctionalInterface
+    public interface CustomConsumer<T> {
+        void accept(T t) throws IOException;
+    }
+
+    private <T> void writeWithException(Collection<T> collection, DataOutputStream dos,
+                                        CustomConsumer<? super T> action) throws IOException {
+        dos.writeInt(collection.size());
+        for (T t : collection) {
+            action.accept(t);
+        }
     }
 }
