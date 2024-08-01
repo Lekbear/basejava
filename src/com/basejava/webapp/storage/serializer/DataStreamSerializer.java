@@ -4,9 +4,7 @@ import com.basejava.webapp.model.*;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class DataStreamSerializer implements StreamSerializer {
     @Override
@@ -51,50 +49,23 @@ public class DataStreamSerializer implements StreamSerializer {
         try (DataInputStream dis = new DataInputStream(is)) {
             Resume resume = new Resume(dis.readUTF(), dis.readUTF());
 
-            int sizeContacts = dis.readInt();
-            for (int i = 0; i < sizeContacts; i++) {
-                resume.putContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-            }
+            resume.putAllContact(readMapWithException(dis, () ->
+                    new AbstractMap.SimpleEntry<>(ContactType.valueOf(dis.readUTF()), dis.readUTF())));
 
-            int sizeSections = dis.readInt();
-            for (int i = 0; i < sizeSections; i++) {
+            resume.putAllSection(readMapWithException(dis, () -> {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
-                Section section = switch (sectionType) {
+                return new AbstractMap.SimpleEntry<>(sectionType, switch (sectionType) {
                     case PERSONAL, OBJECTIVE -> new TextSection(dis.readUTF());
-                    case ACHIEVEMENT, QUALIFICATIONS -> retrieveListTextSection(dis);
-                    case EXPERIENCE, EDUCATION -> retrieveCompanySection(dis);
-                };
-                resume.putSection(sectionType, section);
-            }
+                    case ACHIEVEMENT, QUALIFICATIONS -> new ListTextSection(readListWithException(dis, dis::readUTF));
+                    case EXPERIENCE, EDUCATION -> new CompanySection(readListWithException(dis, () ->
+                            new Company(dis.readUTF(), dis.readUTF(), readListWithException(dis, () ->
+                                    new Period(LocalDate.parse(dis.readUTF()), LocalDate.parse(dis.readUTF()),
+                                            dis.readUTF(), dis.readUTF())))));
+                });
+            }));
+
             return resume;
         }
-    }
-
-    private ListTextSection retrieveListTextSection(DataInputStream dis) throws IOException {
-        List<String> texts = new ArrayList<>();
-        int size = dis.readInt();
-        for (int i = 0; i < size; i++) {
-            texts.add(dis.readUTF());
-        }
-        return new ListTextSection(texts);
-    }
-
-    private CompanySection retrieveCompanySection(DataInputStream dis) throws IOException {
-        List<Company> companies = new ArrayList<>();
-
-        int sizeCompanies = dis.readInt();
-        for (int i = 0; i < sizeCompanies; i++) {
-            String name = dis.readUTF();
-            String webSite = dis.readUTF();
-
-            List<Period> periods = new ArrayList<>();
-            int sizePeriods = dis.readInt();
-            for (int j = 0; j < sizePeriods; j++) {
-                periods.add(new Period(LocalDate.parse(dis.readUTF()), LocalDate.parse(dis.readUTF()), dis.readUTF(), dis.readUTF()));
-            }
-            companies.add(new Company(name, webSite, periods));
-        }
-        return new CompanySection(companies);
     }
 
     @FunctionalInterface
@@ -108,5 +79,36 @@ public class DataStreamSerializer implements StreamSerializer {
         for (T t : collection) {
             action.accept(t);
         }
+    }
+
+    @FunctionalInterface
+    public interface ReadListCustomConsumer<T> {
+        T accept() throws IOException;
+    }
+
+    private <T> ArrayList<T> readListWithException(DataInputStream dis, ReadListCustomConsumer<T> action)
+            throws IOException {
+        int size = dis.readInt();
+        ArrayList<T> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(action.accept());
+        }
+        return list;
+    }
+
+    @FunctionalInterface
+    public interface ReadMapCustomConsumer<K, V> {
+        Map.Entry<K, V> accept() throws IOException;
+    }
+
+    private <K, V> HashMap<K, V> readMapWithException(DataInputStream dis, ReadMapCustomConsumer<K, V> action)
+            throws IOException {
+        int size = dis.readInt();
+        HashMap<K, V> map = new HashMap<>();
+        for (int i = 0; i < size; i++) {
+            Map.Entry<K, V> entry = action.accept();
+            map.put(entry.getKey(), entry.getValue());
+        }
+        return map;
     }
 }
