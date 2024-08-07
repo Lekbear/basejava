@@ -43,7 +43,7 @@ public class PathStorage extends AbstractStorage<Path> {
         try (Stream<Path> s = Files.list(directory)) {
             s.forEach(this::deleteResume);
         } catch (IOException e) {
-            throw new StorageException("IO error", null);
+            throw new StorageException("IO error", e);
         }
     }
 
@@ -88,7 +88,7 @@ public class PathStorage extends AbstractStorage<Path> {
         try (Stream<Path> s = Files.list(directory)) {
             return s.map(this::getResume).collect(Collectors.toList());
         } catch (IOException e) {
-            throw new StorageException("IO error", null);
+            throw new StorageException("IO error", e);
         }
     }
 
@@ -97,7 +97,7 @@ public class PathStorage extends AbstractStorage<Path> {
         try (Stream<Path> s = Files.list(directory)) {
             return (int) s.count();
         } catch (IOException e) {
-            throw new StorageException("IO error", null);
+            throw new StorageException("IO error", e);
         }
     }
 }

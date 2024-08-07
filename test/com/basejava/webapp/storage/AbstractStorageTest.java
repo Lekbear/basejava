@@ -1,8 +1,8 @@
 package com.basejava.webapp.storage;
 
+import com.basejava.webapp.Config;
 import com.basejava.webapp.ResumeTestData;
-import com.basejava.webapp.exception.ExistStorageException;
-import com.basejava.webapp.exception.NotExistStorageException;
+import com.basejava.webapp.exception.StorageException;
 import com.basejava.webapp.model.Resume;
 import org.junit.Assert;
 import org.junit.Before;
@@ -14,7 +14,7 @@ import java.util.List;
 import static org.junit.Assert.assertArrayEquals;
 
 public abstract class AbstractStorageTest {
-    protected static final File STORAGE_DIR = new File(System.getProperty("user.dir") + "//storage");
+    protected static final File STORAGE_DIR = Config.getInstance().getStorageDirString();
     protected final Storage storage;
 
     protected static final String UUID_1 = "uuid1";
@@ -64,7 +64,7 @@ public abstract class AbstractStorageTest {
         assertGet(RESUME_4);
     }
 
-    @Test(expected = ExistStorageException.class)
+    @Test(expected = StorageException.class)
     public void saveExist() {
         storage.save(RESUME_1);
     }
@@ -75,7 +75,7 @@ public abstract class AbstractStorageTest {
         assertGet(RESUME_1);
     }
 
-    @Test(expected = NotExistStorageException.class)
+    @Test(expected = StorageException.class)
     public void updateNotExist() {
         storage.update(RESUME_NOT_EXIST);
     }
@@ -85,19 +85,19 @@ public abstract class AbstractStorageTest {
         assertGet(RESUME_1);
     }
 
-    @Test(expected = NotExistStorageException.class)
+    @Test(expected = StorageException.class)
     public void getNotExist() {
         storage.get(NOT_EXIST_UUID);
     }
 
-    @Test(expected = NotExistStorageException.class)
+    @Test(expected = StorageException.class)
     public void delete() {
         storage.delete(RESUME_2.getUuid());
         assertSize(2);
         assertGet(RESUME_2);
     }
 
-    @Test(expected = NotExistStorageException.class)
+    @Test(expected = StorageException.class)
     public void deleteNotExist() {
         storage.delete(NOT_EXIST_UUID);
     }
