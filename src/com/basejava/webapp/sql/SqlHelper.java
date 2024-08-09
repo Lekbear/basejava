@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class SqlHelper {
     private static final String UNIQUE_VIOLATION = "23505";
-    ConnectionFactory connectionFactory;
+    private final ConnectionFactory connectionFactory;
 
     public SqlHelper(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
