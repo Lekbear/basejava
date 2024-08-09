@@ -2,7 +2,8 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.Config;
 import com.basejava.webapp.ResumeTestData;
-import com.basejava.webapp.exception.StorageException;
+import com.basejava.webapp.exception.ExistStorageException;
+import com.basejava.webapp.exception.NotExistStorageException;
 import com.basejava.webapp.model.Resume;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,6 +11,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertArrayEquals;
 
@@ -17,17 +19,17 @@ public abstract class AbstractStorageTest {
     protected static final File STORAGE_DIR = Config.getInstance().getStorageDirString();
     protected final Storage storage;
 
-    protected static final String UUID_1 = "uuid1";
-    protected static final String UUID_2 = "uuid2";
-    protected static final String UUID_3 = "uuid3";
-    protected static final String UUID_4 = "uuid4";
-    protected static final String NOT_EXIST_UUID = "dummy";
-    protected static final String NOT_EXIST_FULL_NAME = "full_name_dummy";
+    protected static final String UUID_1 = UUID.randomUUID().toString();
+    protected static final String UUID_2 = UUID.randomUUID().toString();
+    protected static final String UUID_3 = UUID.randomUUID().toString();
+    protected static final String UUID_4 = UUID.randomUUID().toString();
+    protected static final String NOT_EXIST_UUID = UUID.randomUUID().toString();
 
     protected static final String FULL_NAME_1 = "full_name_1";
     protected static final String FULL_NAME_2 = "full_name_2";
     protected static final String FULL_NAME_3 = "full_name_3";
     protected static final String FULL_NAME_4 = "full_name_4";
+    protected static final String NOT_EXIST_FULL_NAME = "full_name_dummy";
 
     protected static final Resume RESUME_1 = ResumeTestData.getNewResume(UUID_1, FULL_NAME_1);
     protected static final Resume RESUME_2 = ResumeTestData.getNewResume(UUID_2, FULL_NAME_2);
@@ -64,7 +66,7 @@ public abstract class AbstractStorageTest {
         assertGet(RESUME_4);
     }
 
-    @Test(expected = StorageException.class)
+    @Test(expected = ExistStorageException.class)
     public void saveExist() {
         storage.save(RESUME_1);
     }
@@ -75,7 +77,7 @@ public abstract class AbstractStorageTest {
         assertGet(RESUME_1);
     }
 
-    @Test(expected = StorageException.class)
+    @Test(expected = NotExistStorageException.class)
     public void updateNotExist() {
         storage.update(RESUME_NOT_EXIST);
     }
@@ -85,19 +87,19 @@ public abstract class AbstractStorageTest {
         assertGet(RESUME_1);
     }
 
-    @Test(expected = StorageException.class)
+    @Test(expected = NotExistStorageException.class)
     public void getNotExist() {
         storage.get(NOT_EXIST_UUID);
     }
 
-    @Test(expected = StorageException.class)
+    @Test(expected = NotExistStorageException.class)
     public void delete() {
         storage.delete(RESUME_2.getUuid());
         assertSize(2);
         assertGet(RESUME_2);
     }
 
-    @Test(expected = StorageException.class)
+    @Test(expected = NotExistStorageException.class)
     public void deleteNotExist() {
         storage.delete(NOT_EXIST_UUID);
     }

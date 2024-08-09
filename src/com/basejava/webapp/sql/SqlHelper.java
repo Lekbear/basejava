@@ -1,5 +1,6 @@
 package com.basejava.webapp.sql;
 
+import com.basejava.webapp.exception.ExistStorageException;
 import com.basejava.webapp.exception.StorageException;
 
 import java.sql.Connection;
@@ -7,23 +8,28 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class SqlHelper {
+    private static final String UNIQUE_VIOLATION = "23505";
     ConnectionFactory connectionFactory;
 
     public SqlHelper(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
     }
 
-    public void tryConnection(String sql, CustomSqlInterface customSqlInterface) {
+    public <T> T execute(String sql, CustomSqlInterface<T> customSqlInterface) {
         try (Connection connection = connectionFactory.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
-            customSqlInterface.accept(ps);
+            return customSqlInterface.accept(ps);
         } catch (SQLException e) {
-            throw new StorageException(e);
+            if (e.getSQLState().equals(UNIQUE_VIOLATION)) {
+                throw new ExistStorageException(e);
+            } else {
+                throw new StorageException(e);
+            }
         }
     }
 
     @FunctionalInterface
-    public interface CustomSqlInterface {
-        void accept(PreparedStatement ps) throws SQLException;
+    public interface CustomSqlInterface<T> {
+        T accept(PreparedStatement ps) throws SQLException;
     }
 }
