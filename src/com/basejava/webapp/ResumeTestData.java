@@ -27,10 +27,10 @@ public class ResumeTestData {
 
     public static Resume getNewResume(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
-//        resume.putContact(ContactType.TELEPHONE, "+79218550482");
-//        resume.putContact(ContactType.SKYPE, "skype:grigory.kislin");
-//        resume.putContact(ContactType.EMAIL, "gkislin@yandex.ru");
-//
+        resume.putContact(ContactType.TELEPHONE, "+79218550482");
+        resume.putContact(ContactType.SKYPE, "skype:grigory.kislin");
+        resume.putContact(ContactType.EMAIL, "gkislin@yandex.ru");
+
 //        for (SectionType sectionType : SectionType.values()) {
 //            Section section = switch (sectionType) {
 //                case PERSONAL, OBJECTIVE -> retrieveTextSection(sectionType);
