@@ -34,11 +34,11 @@ public class SqlHelper {
 
     public void executeByConnection(Connection connection,
                                     String sql,
-                                    CustomSqlInterfaceByConnection customSqlInterfaceByConnection) {
+                                    CustomSqlInterfaceByConnection customSqlInterfaceByConnection) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             customSqlInterfaceByConnection.accept(ps);
         } catch (SQLException e) {
-            throw ExceptionUtil.convertException(e);
+            throw e;
         }
     }
 
