@@ -37,8 +37,6 @@ public class SqlHelper {
                                     CustomSqlInterfaceByConnection customSqlInterfaceByConnection) throws SQLException {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             customSqlInterfaceByConnection.accept(ps);
-        } catch (SQLException e) {
-            throw e;
         }
     }
 
