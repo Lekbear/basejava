@@ -31,14 +31,17 @@ public class ResumeTestData {
         resume.putContact(ContactType.SKYPE, "skype:grigory.kislin");
         resume.putContact(ContactType.EMAIL, "gkislin@yandex.ru");
 
-//        for (SectionType sectionType : SectionType.values()) {
-//            Section section = switch (sectionType) {
-//                case PERSONAL, OBJECTIVE -> retrieveTextSection(sectionType);
-//                case ACHIEVEMENT, QUALIFICATIONS -> retrieveListTextSection(sectionType);
-//                case EXPERIENCE, EDUCATION -> retrieveCompanySection(sectionType);
-//            };
-//            resume.putSection(sectionType, section);
-//        }
+        for (SectionType sectionType : SectionType.values()) {
+            if (sectionType == SectionType.EXPERIENCE || sectionType == SectionType.EDUCATION) {
+                continue;
+            }
+            Section section = switch (sectionType) {
+                case PERSONAL, OBJECTIVE -> retrieveTextSection(sectionType);
+                case ACHIEVEMENT, QUALIFICATIONS -> retrieveListTextSection(sectionType);
+                case EXPERIENCE, EDUCATION -> retrieveCompanySection(sectionType);
+            };
+            resume.putSection(sectionType, section);
+        }
 
         return resume;
     }

@@ -41,16 +41,17 @@ public class SqlHelper {
     }
 
     @FunctionalInterface
-    public interface CustomSqlTransactionInterface {
-        void accept(Connection connection) throws SQLException;
+    public interface CustomSqlTransactionInterface<T> {
+        T accept(Connection connection) throws SQLException;
     }
 
-    public void executeTransaction(CustomSqlTransactionInterface customSqlTransactionInterface) {
+    public <T> T executeTransaction(CustomSqlTransactionInterface<T> customSqlTransactionInterface) {
         try (Connection connection = connectionFactory.getConnection()) {
             try {
                 connection.setAutoCommit(false);
-                customSqlTransactionInterface.accept(connection);
+                T res = customSqlTransactionInterface.accept(connection);
                 connection.commit();
+                return res;
             } catch (SQLException e) {
                 connection.rollback();
                 throw ExceptionUtil.convertException(e);
