@@ -10,6 +10,8 @@
 <%@ page import="com.basejava.webapp.model.SectionType" %>
 <%@ page import="com.basejava.webapp.model.TextSection" %>
 <%@ page import="com.basejava.webapp.model.ListTextSection" %>
+<%@ page import="com.basejava.webapp.model.CompanySection" %>
+<%@ page import="java.util.ArrayList" %>
 
 <html>
 <head>
@@ -56,7 +58,7 @@
 
                 <c:forEach var="sectionEntry" items="${resume.sections}" varStatus="counter">
                     <jsp:useBean id="sectionEntry"
-                                 type="java.util.Map.Entry<com.basejava.webapp.model.SectionType, java.lang.String>"/>
+                                 type="java.util.Map.Entry<com.basejava.webapp.model.SectionType, com.basejava.webapp.model.Section>"/>
                     <c:set var="sectionType" value="<%=sectionEntry.getKey()%>"/>
                     <jsp:useBean id="sectionType" type="com.basejava.webapp.model.SectionType"/>
                     <c:if test="${counter.count eq 1}">
@@ -77,6 +79,75 @@
                                 </dd>
                             </c:when>
                             <c:when test="${sectionType == SectionType.EDUCATION || sectionType == SectionType.EXPERIENCE}">
+                                <c:forEach var="company" items="<%=sectionEntry.getValue() == null ? new ArrayList<>() :
+                                    ((CompanySection)sectionEntry.getValue()).getCompanies()%>" varStatus="index">
+                                    <jsp:useBean id="company" type="com.basejava.webapp.model.Company"/>
+                                    <c:if test="${index.count > 1}">
+                                        <dl class="row">
+                                            <dt class="col-10 offset-2">
+                                                <hr class="my-3">
+                                            </dt>
+                                        </dl>
+                                    </c:if>
+
+                                    <c:if test="${index.count == 1}">
+                                        <dt class="col-2"><%= sectionEntry.getKey().getTitle()%>:</dt>
+                                    </c:if>
+
+                                    <c:if test="${company.name.length() != 0}">
+                                        <dl class="row">
+                                            <dt class="col-2 offset-2">Название:</dt>
+                                            <dd class="col-8">${company.name}</dd>
+                                        </dl>
+                                    </c:if>
+
+                                    <c:if test="${company.website.length() != 0}">
+                                        <dl class="row">
+                                            <dt class="col-2 offset-2">URL:</dt>
+                                            <dd class="col-8">${company.website}</dd>
+                                        </dl>
+                                    </c:if>
+
+                                    <c:forEach var="period" items="<%=company.getPeriods()%>" varStatus="periodIndex">
+                                        <jsp:useBean id="period" type="com.basejava.webapp.model.Period"/>
+
+                                        <c:if test="${periodIndex.count > 1}">
+                                            <dl class="row">
+                                                <dt class="col-10 offset-2">
+                                                    <hr class="my-3">
+                                                </dt>
+                                            </dl>
+                                        </c:if>
+
+                                        <c:if test="${period.title.length() != 0}">
+                                            <dl class="row">
+                                                <dt class="col-2 offset-2">Заголовок:</dt>
+                                                <dd class="col-8">${period.title}</dd>
+                                            </dl>
+                                        </c:if>
+
+                                        <c:if test="${period.description.length() != 0}">
+                                            <dl class="row">
+                                                <dt class="col-2 offset-2">Описание:</dt>
+                                                <dd class="col-8">${period.description}</dd>
+                                            </dl>
+                                        </c:if>
+
+                                        <c:if test="${period.startDate != null}">
+                                            <dl class="row">
+                                                <dt class="col-2 offset-2">Дата начала:</dt>
+                                                <dd class="col-8">${period.startDate}</dd>
+                                            </dl>
+                                        </c:if>
+
+                                        <c:if test="${period.endDate != null}">
+                                            <dl class="row">
+                                                <dt class="col-2 offset-2">Дата окончания:</dt>
+                                                <dd class="col-8">${period.endDate}</dd>
+                                            </dl>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:forEach>
                             </c:when>
                         </c:choose>
                     </dl>
