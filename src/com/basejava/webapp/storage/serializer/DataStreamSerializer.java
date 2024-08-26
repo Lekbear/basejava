@@ -24,7 +24,7 @@ public class DataStreamSerializer implements StreamSerializer {
                     case PERSONAL, OBJECTIVE -> {
                         dos.writeUTF(((TextSection) entry.getValue()).getText());
                     }
-                    case ACHIEVEMENT, QUALIFICATIONS -> {
+                    case ACHIEVEMENTS, QUALIFICATIONS -> {
                         writeWithException(((ListTextSection) entry.getValue()).getTexts(), dos, dos::writeUTF);
                     }
                     case EXPERIENCE, EDUCATION -> {
@@ -56,7 +56,7 @@ public class DataStreamSerializer implements StreamSerializer {
                 SectionType sectionType = SectionType.valueOf(dis.readUTF());
                 return new AbstractMap.SimpleEntry<>(sectionType, switch (sectionType) {
                     case PERSONAL, OBJECTIVE -> new TextSection(dis.readUTF());
-                    case ACHIEVEMENT, QUALIFICATIONS -> new ListTextSection(readListWithException(dis, dis::readUTF));
+                    case ACHIEVEMENTS, QUALIFICATIONS -> new ListTextSection(readListWithException(dis, dis::readUTF));
                     case EXPERIENCE, EDUCATION -> new CompanySection(readListWithException(dis, () ->
                             new Company(dis.readUTF(), dis.readUTF(), readListWithException(dis, () ->
                                     new Period(LocalDate.parse(dis.readUTF()), LocalDate.parse(dis.readUTF()),

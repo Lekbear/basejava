@@ -2,8 +2,12 @@ package com.basejava.webapp.storage;
 
 import com.basejava.webapp.exception.NotExistStorageException;
 import com.basejava.webapp.exception.StorageException;
-import com.basejava.webapp.model.*;
+import com.basejava.webapp.model.ContactType;
+import com.basejava.webapp.model.Resume;
+import com.basejava.webapp.model.Section;
+import com.basejava.webapp.model.SectionType;
 import com.basejava.webapp.sql.SqlHelper;
+import com.basejava.webapp.util.JsonParser;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -163,18 +167,9 @@ public class SqlStorage implements Storage {
                 INSERT INTO section (resume_uuid, type, value)
                 VALUES (?, ?, ?)""", ps -> {
             for (Map.Entry<SectionType, Section> entry : r.getSections().entrySet()) {
-                SectionType sectionType = entry.getKey();
-
-                String value = switch (sectionType) {
-                    case PERSONAL, OBJECTIVE -> ((TextSection) entry.getValue()).getText();
-                    case ACHIEVEMENT, QUALIFICATIONS -> String.join("\n",
-                            ((ListTextSection) entry.getValue()).getTexts());
-                    case EXPERIENCE, EDUCATION -> "";
-                };
-
                 ps.setString(1, r.getUuid());
-                ps.setString(2, sectionType.name());
-                ps.setString(3, value);
+                ps.setString(2, entry.getKey().name());
+                ps.setString(3, JsonParser.write(entry.getValue(), Section.class));
                 ps.addBatch();
             }
             ps.executeBatch();
@@ -185,15 +180,9 @@ public class SqlStorage implements Storage {
         String type = rs.getString("section_type");
 
         if (type != null) {
-            SectionType sectionType = SectionType.valueOf(type);
-            String value = rs.getString("section_value");
-
-            Section section = switch (sectionType) {
-                case PERSONAL, OBJECTIVE -> new TextSection(value);
-                case ACHIEVEMENT, QUALIFICATIONS -> new ListTextSection(List.of(value.split("\\n")));
-                case EXPERIENCE, EDUCATION -> null;
-            };
-            resume.putSection(sectionType, section);
+            ;
+            resume.putSection(SectionType.valueOf(type),
+                    JsonParser.read(rs.getString("section_value"), Section.class));
         }
     }
 

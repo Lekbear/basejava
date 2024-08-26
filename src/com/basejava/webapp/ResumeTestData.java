@@ -32,12 +32,9 @@ public class ResumeTestData {
         resume.putContact(ContactType.EMAIL, "gkislin@yandex.ru");
 
         for (SectionType sectionType : SectionType.values()) {
-            if (sectionType == SectionType.EXPERIENCE || sectionType == SectionType.EDUCATION) {
-                continue;
-            }
             Section section = switch (sectionType) {
                 case PERSONAL, OBJECTIVE -> retrieveTextSection(sectionType);
-                case ACHIEVEMENT, QUALIFICATIONS -> retrieveListTextSection(sectionType);
+                case ACHIEVEMENTS, QUALIFICATIONS -> retrieveListTextSection(sectionType);
                 case EXPERIENCE, EDUCATION -> retrieveCompanySection(sectionType);
             };
             resume.putSection(sectionType, section);
@@ -73,7 +70,7 @@ public class ResumeTestData {
     private static void fillListText(SectionType sectionType) {
         List<String> listTexts = new ArrayList<>();
 
-        if (sectionType == SectionType.ACHIEVEMENT) {
+        if (sectionType == SectionType.ACHIEVEMENTS) {
             listTexts.add("Организация команды и успешная реализация Java проектов для сторонних заказчиков: " +
                     "приложения автопарк на стеке Spring Cloud/микросервисы, система мониторинга показателей спортсменов " +
                     "на Spring Boot, участие в проекте МЭШ на Play-2, многомодульный Spring Boot + Vaadin проект для " +
